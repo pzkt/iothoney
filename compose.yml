@@ -1,0 +1,28 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./ha-config:/config
+    environment:
+      TZ: UTC
+    networks: [frontend, backend]
+    security_opt: ["no-new-privileges:true"]
+    depends_on: [example]
+    restart: unless-stopped
+
+  example:
+    build: ./devices/example
+    ports:
+      - "8081:8080"
+    networks: [frontend, backend]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+
+networks:
+  frontend: {}
+  backend:
+    internal: true
